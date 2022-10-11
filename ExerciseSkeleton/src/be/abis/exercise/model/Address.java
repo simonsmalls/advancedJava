@@ -1,5 +1,9 @@
 package be.abis.exercise.model;
 
+import be.abis.exercise.exception.ZipCodeNotCorrectException;
+
+import java.util.Objects;
+
 public class Address {
 	
 	private String street;
@@ -21,6 +25,18 @@ public class Address {
 		this.town = town;
 		this.country = country;
 		this.countryCode = countryCode;
+	}
+
+	public void checkZipCode() throws ZipCodeNotCorrectException {
+		String regexp2 = "[1-9]\\d{3}";
+		String regexp3 = "[1-9]\\d{3}[A-Z]{2}";
+		if (countryCode.equals("BE")){
+			if(!this.zipCode.matches(regexp2)) throw new ZipCodeNotCorrectException("zipcode incorrect for BE");
+		}
+		if (countryCode.equals("NL")){
+			if(!this.zipCode.matches(regexp3)) throw new ZipCodeNotCorrectException("zipcode incorrect for NL");
+		}
+
 	}
 
 	public String getStreet() {
@@ -75,6 +91,17 @@ public class Address {
 	public String toString(){
 		return street + " " + nr + ", " + countryCode + " - " +zipCode+ " " + town;
 	}
-	
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Address address = (Address) o;
+		return street.equals(address.street) && nr.equals(address.nr) && zipCode.equals(address.zipCode) && town.equals(address.town) && country.equals(address.country) && countryCode.equals(address.countryCode);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(street, nr, zipCode, town, country, countryCode);
+	}
 }

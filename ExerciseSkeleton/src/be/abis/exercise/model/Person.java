@@ -1,11 +1,20 @@
 package be.abis.exercise.model;
 
+import be.abis.exercise.exception.AgeException;
+import be.abis.exercise.exception.EmailException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.Comparator;
+import java.util.Objects;
 
 public class Person implements Instructor, CourseParticipant, Comparable<CourseParticipant> {
 
 	private static int counter = 0;
+	Logger l2 = LogManager.getLogger("Console");
+
 
 	private int personNumber;
 	private String firstName;
@@ -14,6 +23,8 @@ public class Person implements Instructor, CourseParticipant, Comparable<CourseP
 	private String email;
 	private String password;
 	private Company company;
+	private int age;
+	String regex= "\\S+@[a-z]+\\.[a-z]{2,5}";
 
 	public Person(String firstName, String lastName) {
 		this.firstName = firstName;
@@ -27,19 +38,41 @@ public class Person implements Instructor, CourseParticipant, Comparable<CourseP
 	}
 	
 	public Person(String firstName, String lastName, LocalDate birthDate, String email,
-			String password, Company company) {
+			String password, Company company) throws EmailException {
 		this(firstName,lastName,company);
+		try {
+			checkEmail(email);
+			this.email = email;
+			this.password = password;
+		} catch (EmailException e) {
+			System.out.println(e.getMessage() + " "+this.firstName);
+		}
 		this.birthDate = birthDate;
-		this.email = email;
-		this.password = password;
+
 	}
 
 	public Person(String firstName, String lastName, LocalDate birthDate, String email,
-			String password) {
+			String password)  {
 		this(firstName,lastName);
+		try {
+			checkEmail(email);
+			this.email = email;
+			this.password = password;
+		} catch (EmailException e) {
+			System.out.println(e.getMessage() + " "+this.firstName);
+		}
 		this.birthDate = birthDate;
-		this.email = email;
-		this.password = password;
+
+	}
+
+	public void checkEmail(String email) throws EmailException {
+		if (!email.matches(regex)) throw new EmailException("email not correct");
+
+
+	}
+
+	public int getAge() {
+		return calculateAge();
 	}
 
 	public int getPersonNumber() {
@@ -78,8 +111,15 @@ public class Person implements Instructor, CourseParticipant, Comparable<CourseP
 		return email;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setEmail(String email) throws EmailException {
+		try {
+			checkEmail(email);
+			this.email = email;
+
+		} catch (EmailException e) {
+			System.out.println(e.getMessage() + " "+this.firstName);
+		};
+
 	}
 
 	public String getPassword() {
@@ -101,12 +141,12 @@ public class Person implements Instructor, CourseParticipant, Comparable<CourseP
 	public static int getNumberOfPersons() {
 		return counter;
 	}
-
+/*
 	@Override
 	public String toString() {
 		return this.firstName + " " + this.lastName;
 	}
-	
+	*/
 
 
 	public void teach(Course course) {
@@ -129,5 +169,29 @@ public class Person implements Instructor, CourseParticipant, Comparable<CourseP
 		}
     	 
     }
-    
+	public int calculateAge()  {
+		LocalDate now =LocalDate.now();
+		Period diff= Period.between(birthDate,now);
+		age= diff.getYears();
+
+
+		return age;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Person person = (Person) o;
+		return firstName.equals(person.firstName) && lastName.equals(person.lastName);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(firstName, lastName);
+	}
+	public String toString(){
+		return firstName+" "+lastName;
+	}
+
 }

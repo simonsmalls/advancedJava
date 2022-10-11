@@ -1,5 +1,7 @@
 package be.abis.exercise.repository;
 
+import be.abis.exercise.model.Company;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -8,8 +10,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import be.abis.exercise.model.Company;
 
 public class FileCompanyRepository implements CompanyRepository {
 	
